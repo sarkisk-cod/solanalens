@@ -1,6 +1,6 @@
 export type Market = {
   id: string;
-  category: "Solana" | "Crypto" | "Macro";
+  category: string;
   question: string;
   yesPrice: number;
   change: number;

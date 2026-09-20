@@ -28,15 +28,17 @@ workflow:
 - Event probability cards and selected-market analysis
 - Interactive YES/NO trade preview
 - Server-only Panta API proxy with safe demo fallback
+- Phantom and Solflare wallet connection
+- Live Panta quote and unsigned-transaction build flow
+- Wallet signing, Solana RPC broadcast, submit, verify, and trade attribution
 - Clear live/demo data-source indicator
 - Accessible mobile navigation and reduced-motion support
 
 ## Panta integration
 
-The MVP route at `app/api/panta/markets/route.ts` calls Panta from the server,
-keeping the API key out of the browser. When `PANTA_API_KEY` is unavailable or
-the API request fails, the UI explicitly switches to demo data rather than
-silently presenting fixtures as live markets.
+The routes under `app/api/panta` call Panta from the server, keeping the API key
+out of the browser. Market discovery safely falls back to clearly labelled demo
+data when the key is unavailable. Trading remains disabled in demo mode.
 
 Planned transaction flow:
 
@@ -77,9 +79,7 @@ npm run build
 
 ## Roadmap
 
-- Confirm Panta catalog response mapping with a test key
-- Add Solana wallet adapter and transaction signing
-- Implement Panta quote/build/submit/verify calls
+- Confirm live catalog and transaction responses with a test key
 - Add wallet positions and claim eligibility
 - Replace asset fixtures with a production market-data provider
 - Add event-to-asset relevance scoring and saved alerts
@@ -87,6 +87,6 @@ npm run build
 
 ## Status
 
-The repository contains the first working MVP interface and Panta API boundary.
-Trading controls are currently a prototype until wallet signing and the full
-Panta primary-buy flow are connected.
+The repository contains the working MVP interface, a real Solana wallet
+connection, and the complete Panta primary-buy transaction path. Live API
+verification still requires the server-side test key.

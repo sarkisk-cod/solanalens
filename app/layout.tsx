@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@fontsource-variable/archivo";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
+import { SolanaProviders } from "@/components/SolanaProviders";
 
 export const metadata: Metadata = {
   title: "SolanaLens — Event Intelligence for Solana",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><SolanaProviders>{children}</SolanaProviders></body>
     </html>
   );
 }

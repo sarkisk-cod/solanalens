@@ -6,8 +6,6 @@ import {
   ArrowRight,
   Bell,
   BookOpen,
-  ChevronDown,
-  CircleDollarSign,
   Command,
   ExternalLink,
   Gauge,
@@ -23,6 +21,8 @@ import {
 import { MarketCard } from "@/components/MarketCard";
 import { SignalDial } from "@/components/SignalDial";
 import { Sparkline } from "@/components/Sparkline";
+import { TradeModal } from "@/components/TradeModal";
+import { WalletControl } from "@/components/WalletControl";
 import { markets as fallbackMarkets, pulsePoints, tokens, type Market } from "@/lib/market-data";
 
 export default function Dashboard() {
@@ -30,10 +30,8 @@ export default function Dashboard() {
   const [selectedMarket, setSelectedMarket] = useState<Market>(fallbackMarkets[0]);
   const [source, setSource] = useState<"demo" | "panta">("demo");
   const [query, setQuery] = useState("");
-  const [connected, setConnected] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tradeOpen, setTradeOpen] = useState(false);
-  const [side, setSide] = useState<"YES" | "NO">("YES");
 
   useEffect(() => {
     fetch("/api/panta/markets")
@@ -109,10 +107,7 @@ export default function Dashboard() {
           </label>
           <div className="topbar-actions">
             <button className="icon-button notification" aria-label="Notifications"><Bell size={18} /><span /></button>
-            <button className={`wallet-button ${connected ? "connected" : ""}`} onClick={() => setConnected((value) => !value)}>
-              <span className="wallet-glyph" />{connected ? "7hQp...4Lns" : "Connect wallet"}
-              <ChevronDown size={14} />
-            </button>
+            <WalletControl />
           </div>
         </header>
 
@@ -211,24 +206,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {tradeOpen && (
-        <div className="modal-backdrop" role="presentation" onMouseDown={() => setTradeOpen(false)}>
-          <section className="trade-modal" role="dialog" aria-modal="true" aria-labelledby="trade-title" onMouseDown={(event) => event.stopPropagation()}>
-            <button className="modal-close" onClick={() => setTradeOpen(false)} aria-label="Close trade panel"><X size={18} /></button>
-            <span className="eyebrow"><CircleDollarSign size={14} /> Panta primary market</span>
-            <h2 id="trade-title">Take a position</h2>
-            <p className="trade-question">{selectedMarket.question}</p>
-            <div className="side-switch">
-              <button className={side === "YES" ? "active yes" : ""} onClick={() => setSide("YES")}><span>YES</span><strong>{Math.round(selectedMarket.yesPrice * 100)}¢</strong></button>
-              <button className={side === "NO" ? "active no" : ""} onClick={() => setSide("NO")}><span>NO</span><strong>{Math.round((1 - selectedMarket.yesPrice) * 100)}¢</strong></button>
-            </div>
-            <label className="amount-input"><span>Amount</span><div><input defaultValue="20.00" inputMode="decimal" /><strong>USDC</strong></div></label>
-            <div className="trade-summary"><span>Estimated shares<strong>{side === "YES" ? "29.41" : "62.50"}</strong></span><span>Potential return<strong>$29.41</strong></span></div>
-            <button className="trade-button modal-trade" onClick={() => connected ? setTradeOpen(false) : setConnected(true)}>{connected ? `Buy ${side}` : "Connect wallet to continue"}<ArrowRight size={16} /></button>
-            <p className="custody-note"><ShieldCheck size={14} />You remain in control. Your wallet signs every transaction.</p>
-          </section>
-        </div>
-      )}
+      {tradeOpen && <TradeModal market={selectedMarket} live={source === "panta"} onClose={() => setTradeOpen(false)} />}
     </main>
   );
 }
