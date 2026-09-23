@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { MarketCard } from "@/components/MarketCard";
+import { PortfolioPanel } from "@/components/PortfolioPanel";
 import { SignalDial } from "@/components/SignalDial";
 import { Sparkline } from "@/components/Sparkline";
 import { TradeModal } from "@/components/TradeModal";
@@ -197,6 +198,8 @@ export default function Dashboard() {
               </aside>
             </div>
           </section>
+
+          <PortfolioPanel live={source === "panta"} />
 
           <footer className="footer">
             <div className="footer-brand"><span className="brand-mark mini"><span /></span><strong>SOLANALENS</strong></div>

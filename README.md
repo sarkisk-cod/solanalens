@@ -31,6 +31,8 @@ workflow:
 - Phantom and Solflare wallet connection
 - Live Panta quote and unsigned-transaction build flow
 - Wallet signing, Solana RPC broadcast, submit, verify, and trade attribution
+- Wallet portfolio with live Panta positions and estimated claim value
+- Claim-eligibility display and non-custodial winnings claim flow
 - Clear live/demo data-source indicator
 - Accessible mobile navigation and reduced-motion support
 
@@ -80,13 +82,12 @@ npm run build
 ## Roadmap
 
 - Confirm live catalog and transaction responses with a test key
-- Add wallet positions and claim eligibility
 - Replace asset fixtures with a production market-data provider
 - Add event-to-asset relevance scoring and saved alerts
 - Capture early-user feedback and usage evidence for the submission
 
 ## Status
 
-The repository contains the working MVP interface, a real Solana wallet
-connection, and the complete Panta primary-buy transaction path. Live API
-verification still requires the server-side test key.
+The repository contains the working MVP interface, Solana wallet connection,
+the complete Panta primary-buy path, wallet positions, and winnings claims.
+Live API verification still requires the server-side test key.

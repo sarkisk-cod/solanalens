@@ -46,3 +46,30 @@ export type TradeProgress =
   | "submitting"
   | "complete"
   | "error";
+
+export type Position = {
+  marketId: string;
+  category?: string | null;
+  side: "yes" | "no" | string;
+  shares: string;
+  phase: string;
+  claimable: boolean;
+  claimed: boolean;
+  outcome?: string | null;
+  estimatedValue?: string;
+};
+
+export type PositionsResponse = {
+  wallet: string;
+  positions: Position[];
+};
+
+export type ClaimBuild = {
+  wallet: string;
+  marketId: string;
+  outcome: string;
+  winningShares: string;
+  instructions: BuiltInstruction[];
+  recentBlockhash: string;
+  lastValidBlockHeight?: number;
+};
