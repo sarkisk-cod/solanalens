@@ -24,8 +24,9 @@ workflow:
 ## Current MVP
 
 - Responsive market-intelligence dashboard
-- Searchable Solana asset watchlist
+- Searchable Solana asset watchlist with live price, volume, liquidity, and market cap
 - Event probability cards and selected-market analysis
+- Transparent event-to-asset score: Panta probability 50%, momentum 30%, liquidity 20%
 - Interactive YES/NO trade preview
 - Server-only Panta API proxy with safe demo fallback
 - Phantom and Solflare wallet connection
@@ -54,6 +55,8 @@ The wallet remains non-custodial throughout the flow.
 - TypeScript
 - Custom responsive CSS design system
 - Panta API on Solana
+- DEX Screener public API for Solana market data
+- Solana RPC circulating supply for SOL market-cap calculation
 
 ## Local setup
 
@@ -82,8 +85,7 @@ npm run build
 ## Roadmap
 
 - Confirm live catalog and transaction responses with a test key
-- Replace asset fixtures with a production market-data provider
-- Add event-to-asset relevance scoring and saved alerts
+- Expand event-to-asset relevance mapping and add saved alerts
 - Capture early-user feedback and usage evidence for the submission
 
 ## Status

@@ -21,15 +21,17 @@ import {
 import { MarketCard } from "@/components/MarketCard";
 import { PortfolioPanel } from "@/components/PortfolioPanel";
 import { SignalDial } from "@/components/SignalDial";
-import { Sparkline } from "@/components/Sparkline";
 import { TradeModal } from "@/components/TradeModal";
 import { WalletControl } from "@/components/WalletControl";
-import { markets as fallbackMarkets, pulsePoints, tokens, type Market } from "@/lib/market-data";
+import { scoreTokenWithEvents } from "@/lib/asset-score";
+import { markets as fallbackMarkets, tokens as fallbackTokens, type Market, type Token } from "@/lib/market-data";
 
 export default function Dashboard() {
   const [marketList, setMarketList] = useState(fallbackMarkets);
   const [selectedMarket, setSelectedMarket] = useState<Market>(fallbackMarkets[0]);
   const [source, setSource] = useState<"demo" | "panta">("demo");
+  const [assetTokens, setAssetTokens] = useState<Token[]>(fallbackTokens);
+  const [assetSource, setAssetSource] = useState<"demo" | "dexscreener">("demo");
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tradeOpen, setTradeOpen] = useState(false);
@@ -47,13 +49,42 @@ export default function Dashboard() {
       .catch(() => setSource("demo"));
   }, []);
 
+  useEffect(() => {
+    fetch("/api/market-data")
+      .then((response) => response.json())
+      .then((payload: { source?: "demo" | "dexscreener"; tokens?: Token[] }) => {
+        if (payload.tokens?.length) {
+          setAssetTokens(payload.tokens);
+          setAssetSource(payload.source ?? "demo");
+        }
+      })
+      .catch(() => setAssetSource("demo"));
+  }, []);
+
+  const scoredTokens = useMemo(
+    () => assetTokens.map((token) => scoreTokenWithEvents(token, marketList)),
+    [assetTokens, marketList],
+  );
+
   const visibleTokens = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return tokens;
-    return tokens.filter((token) =>
+    if (!normalized) return scoredTokens;
+    return scoredTokens.filter((token) =>
       `${token.symbol} ${token.name}`.toLowerCase().includes(normalized),
     );
-  }, [query]);
+  }, [query, scoredTokens]);
+
+  const ecosystemScore = Math.round(scoredTokens.reduce((sum, token) => sum + token.eventRisk, 0) / scoredTokens.length);
+  const averageChange = scoredTokens.reduce((sum, token) => sum + token.change, 0) / scoredTokens.length;
+  const marketBreadth = Math.round((scoredTokens.filter((token) => token.change >= 0).length / scoredTokens.length) * 100);
+  const eventConfidence = Math.round(marketList.reduce((sum, market) => sum + Math.max(market.yesPrice, 1 - market.yesPrice) * 100, 0) / marketList.length);
+  const volatilityRisk = Math.min(100, Math.round(scoredTokens.reduce((sum, token) => sum + Math.abs(token.change), 0) / scoredTokens.length * 8));
+  const lensLabel = ecosystemScore >= 65 ? "Risk-on" : ecosystemScore < 42 ? "Caution" : "Balanced";
+  const pulseSummary = ecosystemScore >= 65
+    ? "Event markets and asset momentum point to a constructive Solana outlook."
+    : ecosystemScore < 42
+      ? "Event conviction and asset momentum point to elevated downside risk."
+      : "Signals are mixed; event conviction has not confirmed a clear direction.";
 
   function openTrade(market: Market) {
     setSelectedMarket(market);
@@ -81,8 +112,8 @@ export default function Dashboard() {
 
         <div className="sidebar-label">Intelligence</div>
         <nav className="secondary-nav">
-          <a className="nav-item" href="#signals"><Sparkles size={18} />Signal feed</a>
-          <a className="nav-item" href="#research"><BookOpen size={18} />Research notes</a>
+          <a className="nav-item" href="#markets"><Sparkles size={18} />Signal feed</a>
+          <a className="nav-item" href="#assets"><BookOpen size={18} />Asset research</a>
         </nav>
 
         <div className="sidebar-status">
@@ -125,41 +156,47 @@ export default function Dashboard() {
           <section className="pulse-panel">
             <div className="pulse-main">
               <div className="section-kicker"><Activity size={15} /> SOLANA ECOSYSTEM PULSE</div>
-              <div className="pulse-score"><strong>76.4</strong><span className="delta up">+4.8 today</span></div>
-              <p>Event markets are pricing a constructive outlook, led by ETF and network-growth expectations.</p>
-              <div className="pulse-chart">
-                <Sparkline points={pulsePoints} />
-                <span className="chart-label high">76.4</span>
-                <span className="chart-label low">41.0</span>
+              <div className="pulse-score"><strong>{ecosystemScore}</strong><span className={`delta ${averageChange >= 0 ? "up" : "down"}`}>{averageChange >= 0 ? "+" : ""}{averageChange.toFixed(2)}% today</span></div>
+              <p>{pulseSummary}</p>
+              <div className="score-distribution">
+                {scoredTokens.map((token) => <div key={token.symbol}><span>{token.symbol}</span><i><b style={{ width: `${token.eventRisk}%` }} /></i><strong>{token.eventRisk}</strong></div>)}
               </div>
-              <div className="chart-range"><span>24H</span><span>7D</span><span className="active">30D</span><span>90D</span></div>
+              <div className="score-caption"><span>Composite: Panta probability · 50%</span><span>Momentum · 30%</span><span>Liquidity · 20%</span></div>
             </div>
             <div className="pulse-side">
-              <div className="pulse-side-top"><SignalDial value={76} label="Bullish" /><div><span>Lens signal</span><strong>Risk-on</strong><p>High agreement across asset momentum and Panta markets.</p></div></div>
+              <div className="pulse-side-top"><SignalDial value={ecosystemScore} label={ecosystemScore >= 65 ? "Bullish" : ecosystemScore < 42 ? "Caution" : "Neutral"} /><div><span>Lens signal</span><strong>{lensLabel}</strong><p>Composite agreement across asset momentum, liquidity, and Panta markets.</p></div></div>
               <div className="signal-metrics">
-                <div><span>Market breadth</span><strong>68%</strong><i style={{ "--value": "68%" } as React.CSSProperties} /></div>
-                <div><span>Event confidence</span><strong>82%</strong><i style={{ "--value": "82%" } as React.CSSProperties} /></div>
-                <div><span>Volatility risk</span><strong>44%</strong><i className="warn" style={{ "--value": "44%" } as React.CSSProperties} /></div>
+                <div><span>Market breadth</span><strong>{marketBreadth}%</strong><i style={{ "--value": `${marketBreadth}%` } as React.CSSProperties} /></div>
+                <div><span>Event confidence</span><strong>{eventConfidence}%</strong><i style={{ "--value": `${eventConfidence}%` } as React.CSSProperties} /></div>
+                <div><span>Volatility risk</span><strong>{volatilityRisk}%</strong><i className="warn" style={{ "--value": `${volatilityRisk}%` } as React.CSSProperties} /></div>
               </div>
-              <button className="text-action">Open signal methodology <ArrowRight size={14} /></button>
+              <details className="methodology">
+                <summary>Open signal methodology <ArrowRight size={14} /></summary>
+                <div>
+                  <p><strong>50%</strong>Panta event probability</p>
+                  <p><strong>30%</strong>24-hour asset momentum</p>
+                  <p><strong>20%</strong>DEX liquidity quality</p>
+                  <small>Scores are informational signals, not forecasts or financial advice.</small>
+                </div>
+              </details>
             </div>
           </section>
 
           <section className="section-block" id="assets">
             <div className="section-heading">
               <div><span className="section-index">01</span><h2>Asset lens</h2><p>Price action interpreted through event-market conviction.</p></div>
-              <button className="ghost-button">View all assets <ArrowRight size={14} /></button>
+              <div className="source-badge"><span className={`live-dot ${assetSource}`} />{assetSource === "dexscreener" ? "Live DEX data" : "Demo market data"}</div>
             </div>
             <div className="asset-table-wrap">
               <table className="asset-table">
-                <thead><tr><th>Asset</th><th>Price</th><th>24h</th><th>30d path</th><th>Market cap</th><th>Lens signal</th><th>Event score</th></tr></thead>
+                <thead><tr><th>Asset</th><th>Price</th><th>24h</th><th>24h volume</th><th>Market cap</th><th>Lens signal</th><th>Event score</th></tr></thead>
                 <tbody>
                   {visibleTokens.map((token) => (
                     <tr key={token.symbol}>
                       <td><span className={`token-icon token-${token.symbol.toLowerCase()}`}>{token.symbol.slice(0, 1)}</span><span className="token-name"><strong>{token.symbol}</strong><small>{token.name}</small></span></td>
                       <td className="mono-value">{token.price}</td>
                       <td><span className={token.change >= 0 ? "delta up" : "delta down"}>{token.change >= 0 ? "+" : ""}{token.change.toFixed(2)}%</span></td>
-                      <td><Sparkline className="table-spark" points={token.points} positive={token.change >= 0} /></td>
+                      <td><span className="market-stat"><strong>{token.volume24h}</strong><small>{token.liquidity} liquidity</small></span></td>
                       <td className="mono-value muted">{token.marketCap}</td>
                       <td><span className={`signal-badge ${token.signal.toLowerCase()}`}><span />{token.signal}</span></td>
                       <td><span className="event-score"><strong>{token.eventRisk}</strong><span><i style={{ width: `${token.eventRisk}%` }} /></span></span></td>

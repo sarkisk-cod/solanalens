@@ -10,14 +10,20 @@ export type Market = {
 };
 
 export type Token = {
+  address: string;
   symbol: string;
   name: string;
   price: string;
+  priceUsd: number;
   change: number;
   marketCap: string;
+  marketCapUsd: number;
+  volume24h: string;
+  volume24hUsd: number;
+  liquidity: string;
+  liquidityUsd: number;
   signal: "Bullish" | "Neutral" | "Caution";
   eventRisk: number;
-  points: number[];
 };
 
 export const markets: Market[] = [
@@ -65,47 +71,67 @@ export const markets: Market[] = [
 
 export const tokens: Token[] = [
   {
+    address: "So11111111111111111111111111111111111111112",
     symbol: "SOL",
     name: "Solana",
     price: "$238.42",
+    priceUsd: 238.42,
     change: 5.84,
     marketCap: "$113.8B",
+    marketCapUsd: 113_800_000_000,
+    volume24h: "$139.1M",
+    volume24hUsd: 139_100_000,
+    liquidity: "$26.3M",
+    liquidityUsd: 26_300_000,
     signal: "Bullish",
     eventRisk: 78,
-    points: [22, 24, 23, 28, 26, 31, 35, 33, 39, 42, 47, 51],
   },
   {
+    address: "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
     symbol: "JUP",
     name: "Jupiter",
     price: "$1.18",
+    priceUsd: 1.18,
     change: 3.12,
     marketCap: "$3.6B",
+    marketCapUsd: 3_600_000_000,
+    volume24h: "$3.0M",
+    volume24hUsd: 3_000_000,
+    liquidity: "$715K",
+    liquidityUsd: 715_000,
     signal: "Bullish",
     eventRisk: 72,
-    points: [18, 19, 17, 21, 23, 22, 27, 26, 29, 31, 30, 34],
   },
   {
+    address: "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL",
     symbol: "JTO",
     name: "Jito",
     price: "$3.06",
+    priceUsd: 3.06,
     change: -1.44,
     marketCap: "$1.1B",
+    marketCapUsd: 1_100_000_000,
+    volume24h: "$2.1M",
+    volume24hUsd: 2_100_000,
+    liquidity: "$186K",
+    liquidityUsd: 186_000,
     signal: "Neutral",
     eventRisk: 54,
-    points: [29, 31, 32, 30, 27, 28, 25, 26, 24, 23, 25, 24],
   },
   {
+    address: "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
     symbol: "PYTH",
     name: "Pyth Network",
     price: "$0.41",
+    priceUsd: 0.41,
     change: -4.08,
     marketCap: "$1.5B",
+    marketCapUsd: 1_500_000_000,
+    volume24h: "$3.1M",
+    volume24hUsd: 3_100_000,
+    liquidity: "$398K",
+    liquidityUsd: 398_000,
     signal: "Caution",
     eventRisk: 36,
-    points: [41, 39, 38, 36, 37, 33, 34, 31, 29, 30, 27, 25],
   },
-];
-
-export const pulsePoints = [
-  42, 45, 43, 49, 53, 51, 56, 60, 58, 64, 68, 66, 71, 75, 73, 79, 82,
 ];
