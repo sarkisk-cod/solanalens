@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { MarketCard } from "@/components/MarketCard";
+import { AlertDrawer, type SavedAlert } from "@/components/AlertDrawer";
 import { PortfolioPanel } from "@/components/PortfolioPanel";
 import { SignalDial } from "@/components/SignalDial";
 import { TradeModal } from "@/components/TradeModal";
@@ -35,6 +36,8 @@ export default function Dashboard() {
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tradeOpen, setTradeOpen] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [alerts, setAlerts] = useState<SavedAlert[]>([]);
 
   useEffect(() => {
     fetch("/api/panta/markets")
@@ -47,6 +50,21 @@ export default function Dashboard() {
         }
       })
       .catch(() => setSource("demo"));
+  }, []);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const saved = window.localStorage.getItem("solanalens-alerts");
+        if (saved) {
+          const parsed = JSON.parse(saved) as unknown;
+          if (Array.isArray(parsed)) setAlerts(parsed as SavedAlert[]);
+        }
+      } catch {
+        window.localStorage.removeItem("solanalens-alerts");
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -89,6 +107,29 @@ export default function Dashboard() {
   function openTrade(market: Market) {
     setSelectedMarket(market);
     setTradeOpen(true);
+  }
+
+  function saveAlert(market: Market) {
+    setAlerts((current) => {
+      if (current.some((alert) => alert.marketId === market.id)) return current;
+      const next = [...current, {
+        marketId: market.id,
+        question: market.question,
+        baselineProbability: market.yesPrice,
+        thresholdPoints: 5,
+        createdAt: new Date().toISOString(),
+      }];
+      window.localStorage.setItem("solanalens-alerts", JSON.stringify(next));
+      return next;
+    });
+  }
+
+  function removeAlert(marketId: string) {
+    setAlerts((current) => {
+      const next = current.filter((alert) => alert.marketId !== marketId);
+      window.localStorage.setItem("solanalens-alerts", JSON.stringify(next));
+      return next;
+    });
   }
 
   return (
@@ -138,7 +179,7 @@ export default function Dashboard() {
             <kbd><Command size={11} />K</kbd>
           </label>
           <div className="topbar-actions">
-            <button className="icon-button notification" aria-label="Notifications"><Bell size={18} /><span /></button>
+            <button className="icon-button notification" onClick={() => setAlertsOpen(true)} aria-label="Open event watchlist"><Bell size={18} />{alerts.length > 0 && <span>{alerts.length}</span>}</button>
             <WalletControl />
           </div>
         </header>
@@ -231,6 +272,7 @@ export default function Dashboard() {
                 </div>
                 <div className="market-insight"><Sparkles size={17} /><p><strong>Lens read</strong>The market is leaning positive. Conviction rose {Math.abs(selectedMarket.change).toFixed(1)} points as related asset momentum accelerated.</p></div>
                 <button className="trade-button" onClick={() => openTrade(selectedMarket)}>Trade this outcome <ArrowRight size={16} /></button>
+                <button className={`watch-button ${alerts.some((alert) => alert.marketId === selectedMarket.id) ? "saved" : ""}`} onClick={() => saveAlert(selectedMarket)} disabled={alerts.some((alert) => alert.marketId === selectedMarket.id)}><Bell size={14} />{alerts.some((alert) => alert.marketId === selectedMarket.id) ? "Probability watch saved" : "Watch probability ±5 pts"}</button>
                 <div className="panta-credit"><ShieldCheck size={14} />Powered by Panta infrastructure</div>
               </aside>
             </div>
@@ -247,6 +289,7 @@ export default function Dashboard() {
       </section>
 
       {tradeOpen && <TradeModal market={selectedMarket} live={source === "panta"} onClose={() => setTradeOpen(false)} />}
+      {alertsOpen && <AlertDrawer alerts={alerts} markets={marketList} onRemove={removeAlert} onClose={() => setAlertsOpen(false)} />}
     </main>
   );
 }

@@ -34,6 +34,7 @@ workflow:
 - Wallet signing, Solana RPC broadcast, submit, verify, and trade attribution
 - Wallet portfolio with live Panta positions and estimated claim value
 - Claim-eligibility display and non-custodial winnings claim flow
+- Persistent event watchlist with five-point probability-move alerts
 - Clear live/demo data-source indicator
 - Accessible mobile navigation and reduced-motion support
 
@@ -85,8 +86,13 @@ npm run build
 ## Roadmap
 
 - Confirm live catalog and transaction responses with a test key
-- Expand event-to-asset relevance mapping and add saved alerts
+- Expand event-to-asset relevance mapping and delivery channels for saved alerts
 - Capture early-user feedback and usage evidence for the submission
+
+## Hackathon materials
+
+See [`SUBMISSION.md`](./SUBMISSION.md) for the English pitch, Panta integration
+summary, demo flow, judging-criteria alignment, and final submission checklist.
 
 ## Status
 
