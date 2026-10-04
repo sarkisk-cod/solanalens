@@ -4,6 +4,7 @@ const API_BASE_URL = (
   process.env.PANTA_API_BASE_URL ?? "https://live-api.panta.market/api/v1"
 ).replace(/\/$/, "");
 const BASE58_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const MAX_BODY_BYTES = 32_768;
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.PANTA_API_KEY;
@@ -12,6 +13,11 @@ export async function POST(request: NextRequest) {
       { code: "PANTA_NOT_CONFIGURED", detail: "Claims are disabled in demo mode." },
       { status: 503 },
     );
+  }
+
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ code: "PAYLOAD_TOO_LARGE" }, { status: 413 });
   }
 
   let body: { wallet?: string; marketId?: string };
@@ -37,15 +43,16 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({ wallet: body.wallet, marketId: body.marketId }),
       cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
     });
     const text = await upstream.text();
     return new NextResponse(text, {
       status: upstream.status,
       headers: { "Content-Type": upstream.headers.get("content-type") ?? "application/json" },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { code: "PANTA_UNREACHABLE", detail: error instanceof Error ? error.message : "Claim request failed" },
+      { code: "PANTA_UNREACHABLE", detail: "Panta is temporarily unavailable." },
       { status: 502 },
     );
   }

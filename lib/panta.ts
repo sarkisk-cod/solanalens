@@ -15,6 +15,7 @@ export async function fetchPantaMarkets(): Promise<PantaMarket[]> {
   const response = await fetch(`${API_BASE_URL}/markets/`, {
     headers: { "X-Api-Key": apiKey },
     next: { revalidate: 30 },
+    signal: AbortSignal.timeout(12_000),
   });
 
   if (!response.ok) {
@@ -31,9 +32,15 @@ export async function fetchPantaMarkets(): Promise<PantaMarket[]> {
 }
 
 export function normalizePantaMarket(item: PantaMarket, index: number): Market {
-  const yesPrice = Number(
+  const rawYesPrice = Number(
     item.yesPrice ?? item.primaryYesPrice ?? item.yes_price ?? 0.5,
   );
+  const normalizedYesPrice = rawYesPrice > 1 && rawYesPrice <= 100
+    ? rawYesPrice / 100
+    : rawYesPrice;
+  const yesPrice = Number.isFinite(normalizedYesPrice) && normalizedYesPrice >= 0 && normalizedYesPrice <= 1
+    ? normalizedYesPrice
+    : 0.5;
   const title = String(item.title ?? item.question ?? "Untitled Panta market");
   const relatedAssets = inferRelatedAssets(title);
   const volumeNumber = Number(item.volumeUsdc ?? item.totalVolumeUsdc);
@@ -46,12 +53,17 @@ export function normalizePantaMarket(item: PantaMarket, index: number): Market {
     id: String(item.marketId ?? item.id ?? `panta-${index}`),
     category: String(item.category ?? "Crypto"),
     question: title,
-    yesPrice: Number.isFinite(yesPrice) ? yesPrice : 0.5,
-    change: Number(item.change24h ?? 0),
+    yesPrice,
+    change: finiteNumber(item.change24h),
     volume,
     closes: Number.isFinite(endTime) ? formatTimeRemaining(endTime) : "Open",
     relatedAssets,
   };
+}
+
+function finiteNumber(value: unknown): number {
+  const number = Number(value ?? 0);
+  return Number.isFinite(number) ? number : 0;
 }
 
 function inferRelatedAssets(title: string): string[] {

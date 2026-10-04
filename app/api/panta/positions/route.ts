@@ -28,15 +28,16 @@ export async function GET(request: NextRequest) {
     const upstream = await fetch(url, {
       headers: { Accept: "application/json", "X-Api-Key": apiKey },
       cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
     });
     const text = await upstream.text();
     return new NextResponse(text, {
       status: upstream.status,
       headers: { "Content-Type": upstream.headers.get("content-type") ?? "application/json" },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { code: "PANTA_UNREACHABLE", detail: error instanceof Error ? error.message : "Positions request failed" },
+      { code: "PANTA_UNREACHABLE", detail: "Panta is temporarily unavailable." },
       { status: 502 },
     );
   }

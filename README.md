@@ -81,7 +81,13 @@ Never expose this key with a `NEXT_PUBLIC_` prefix or commit `.env.local`.
 npm run lint
 npm run typecheck
 npm run build
+npm run test:smoke
 ```
+
+The smoke suite boots the production build against a local mock Panta server.
+It verifies market normalization, server-side API-key forwarding, endpoint
+validation, payload limits, and the main application shell without spending
+funds or contacting the live Panta API.
 
 ## Roadmap
 
