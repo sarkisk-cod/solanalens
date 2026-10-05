@@ -59,6 +59,15 @@ The wallet remains non-custodial throughout the flow.
 - DEX Screener public API for Solana market data
 - Solana RPC circulating supply for SOL market-cap calculation
 
+## Architecture
+
+![SolanaLens architecture](./docs/architecture.svg)
+
+The browser handles research and wallet approval, while same-origin Next.js
+routes protect the Panta API key, validate requests, and connect to Panta, DEX
+Screener, and Solana RPC. See the [demo script](./docs/demo-script.md) for the
+recommended hackathon walkthrough.
+
 ## Local setup
 
 ```bash

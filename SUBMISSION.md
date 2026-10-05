@@ -50,6 +50,8 @@ custody of user wallets or private keys.
 
 ## Technical architecture
 
+![SolanaLens architecture](./docs/architecture.svg)
+
 - **Frontend:** Next.js, React, TypeScript, custom responsive CSS
 - **Wallets:** Solana Wallet Adapter with Phantom and Solflare
 - **Transactions:** `@solana/web3.js` versioned transactions
@@ -63,6 +65,9 @@ custody of user wallets or private keys.
   non-custodial signing, and dependency audit overrides
 
 ## Demo flow
+
+The timed narration and shot list are available in
+[`docs/demo-script.md`](./docs/demo-script.md).
 
 1. Open the overview and identify the live DEX-data badge.
 2. Explain the ecosystem score and expand its methodology.
@@ -136,7 +141,8 @@ claims, and attribution flows.
 - [ ] Confirm mobile layout and wallet deep-link behavior
 - [ ] Add a public demo URL to README and both submissions
 - [ ] Record a demo using the flow in this document
-- [ ] Add screenshots and architecture diagram
+- [ ] Add final product screenshots
+- [x] Add architecture diagram
 - [ ] Collect and document genuine tester feedback
 - [ ] Submit to the official Colosseum hackathon
 - [ ] Submit separately to the Panta Side Track on Superteam Earn

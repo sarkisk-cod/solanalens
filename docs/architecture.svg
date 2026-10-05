@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">SolanaLens system architecture</title>
+  <desc id="description">Non-custodial architecture connecting the SolanaLens browser interface to server-side API routes, Panta, DEX Screener, and Solana RPC.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101310"/>
+      <stop offset="1" stop-color="#080b09"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1d241e" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171c18"/>
+      <stop offset="1" stop-color="#111512"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity=".34"/>
+    </filter>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b7f34a"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#61b8ff"/>
+    </marker>
+    <marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f4b860"/>
+    </marker>
+    <style><![CDATA[
+      .label { fill:#707a72; font-family:'DejaVu Sans Mono',monospace; font-size:13px; font-weight:700; letter-spacing:1px; }
+      .title { fill:#f1f4ee; font-family:'DejaVu Sans',sans-serif; font-size:42px; font-weight:700; }
+      .subtitle { fill:#89938b; font-family:'DejaVu Sans',sans-serif; font-size:17px; font-weight:400; }
+      .node-title { fill:#edf2ea; font-family:'DejaVu Sans',sans-serif; font-size:20px; font-weight:700; }
+      .node-copy { fill:#8b958d; font-family:'DejaVu Sans',sans-serif; font-size:14px; font-weight:400; }
+      .chip { fill:#a4aea6; font-family:'DejaVu Sans Mono',monospace; font-size:11px; font-weight:700; letter-spacing:.2px; }
+      .accent-green { fill:#b7f34a; }
+      .accent-blue { fill:#61b8ff; }
+      .accent-gold { fill:#f4b860; }
+      .flow-label { fill:#9ba59d; font-family:'DejaVu Sans Mono',monospace; font-size:11px; font-weight:700; letter-spacing:.2px; }
+      .panel { fill:url(#panel); stroke:#303a32; stroke-width:1.5; }
+      .inner { fill:#0d110e; stroke:#29312b; stroke-width:1; }
+      .green { stroke:#b7f34a; }
+      .blue { stroke:#61b8ff; }
+      .gold { stroke:#f4b860; }
+      .flow { fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+      .dash { stroke-dasharray:7 8; }
+    ]]></style>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)" opacity=".62"/>
+  <circle cx="1330" cy="72" r="260" fill="#b7f34a" opacity=".025"/>
+  <circle cx="122" cy="820" r="230" fill="#61b8ff" opacity=".025"/>
+  <g transform="translate(72 64)">
+    <text class="label">SYSTEM MAP / V1.0</text>
+    <text class="title" y="56">SolanaLens architecture</text>
+    <text class="subtitle" y="88">Event intelligence and non-custodial execution across Solana and Panta.</text>
+  </g>
+  <g transform="translate(1268 61)">
+    <rect width="260" height="42" rx="3" fill="#151a16" stroke="#344038"/>
+    <circle cx="22" cy="21" r="5" fill="#b7f34a"/>
+    <text class="chip" x="38" y="25">SERVER-SIDE SECRETS</text>
+  </g>
+  <!-- Architecture nodes -->
+  <g transform="translate(72 246)" filter="url(#shadow)">
+    <rect class="panel" width="248" height="338" rx="5"/>
+    <rect x="18" y="18" width="72" height="25" rx="12.5" fill="#20271f"/>
+    <text class="chip" x="31" y="35">USER</text>
+    <circle cx="124" cy="112" r="43" fill="#0d110e" stroke="#b7f34a" stroke-width="2"/>
+    <circle cx="124" cy="99" r="12" fill="none" stroke="#b7f34a" stroke-width="2"/>
+    <path d="M98 139c4-17 14-25 26-25s22 8 26 25" fill="none" stroke="#b7f34a" stroke-width="2"/>
+    <text class="node-title" x="124" y="187" text-anchor="middle">Trader / researcher</text>
+    <text class="node-copy" x="124" y="215" text-anchor="middle">Discovers signals</text>
+    <text class="node-copy" x="124" y="236" text-anchor="middle">and controls execution.</text>
+    <rect class="inner" x="22" y="267" width="204" height="45" rx="3"/>
+    <circle cx="43" cy="289" r="5" fill="#f4b860"/>
+    <text class="chip" x="57" y="293">PHANTOM / SOLFLARE</text>
+  </g>
+
+  <g transform="translate(402 190)" filter="url(#shadow)">
+    <rect class="panel" width="478" height="450" rx="5"/>
+    <rect x="0" y="0" width="478" height="52" rx="5" fill="#1a201b"/>
+    <circle cx="24" cy="26" r="4" fill="#b7f34a"/><circle cx="40" cy="26" r="4" fill="#5d675f"/><circle cx="56" cy="26" r="4" fill="#5d675f"/>
+    <text class="label" x="90" y="31">SOLANALENS / BROWSER</text>
+    <text class="node-title" x="28" y="91">Research + execution terminal</text>
+    <text class="node-copy" x="28" y="116">One interface for market context and user-authorized actions.</text>
+    <g transform="translate(28 145)">
+      <rect class="inner" width="198" height="98" rx="3"/>
+      <text class="chip" x="16" y="25" style="fill:#b7f34a">01 / ASSET LENS</text>
+      <text class="node-copy" x="16" y="52">Price · momentum</text>
+      <text class="node-copy" x="16" y="73">volume · liquidity</text>
+    </g>
+    <g transform="translate(252 145)">
+      <rect class="inner" width="198" height="98" rx="3"/>
+      <text class="chip" x="16" y="25" style="fill:#b7f34a">02 / EVENT RADAR</text>
+      <text class="node-copy" x="16" y="52">YES/NO probability</text>
+      <text class="node-copy" x="16" y="73">watchlist alerts</text>
+    </g>
+    <g transform="translate(28 260)">
+      <rect class="inner" width="198" height="98" rx="3"/>
+      <text class="chip" x="16" y="25" style="fill:#f4b860">03 / TRADE FLOW</text>
+      <text class="node-copy" x="16" y="52">Quote · build · sign</text>
+      <text class="node-copy" x="16" y="73">broadcast · verify</text>
+    </g>
+    <g transform="translate(252 260)">
+      <rect class="inner" width="198" height="98" rx="3"/>
+      <text class="chip" x="16" y="25" style="fill:#61b8ff">04 / PORTFOLIO</text>
+      <text class="node-copy" x="16" y="52">Positions · eligibility</text>
+      <text class="node-copy" x="16" y="73">winnings claims</text>
+    </g>
+    <rect x="28" y="384" width="422" height="40" rx="3" fill="#111611" stroke="#40503b"/>
+    <text class="chip" x="239" y="409" text-anchor="middle" style="fill:#b7f34a">WALLET SIGNS LOCALLY — KEYS NEVER LEAVE</text>
+  </g>
+
+  <g transform="translate(960 190)" filter="url(#shadow)">
+    <rect class="panel" width="260" height="450" rx="5"/>
+    <text class="label" x="24" y="38">TRUST BOUNDARY</text>
+    <text class="node-title" x="24" y="73">Next.js API layer</text>
+    <text class="node-copy" x="24" y="99">Same-origin server routes</text>
+    <g transform="translate(20 130)">
+      <rect class="inner" width="220" height="58" rx="3"/>
+      <text class="chip" x="14" y="24">PANTA + ASSET READS</text>
+      <text class="node-copy" x="14" y="44">Discovery · normalization</text>
+    </g>
+    <g transform="translate(20 201)">
+      <rect class="inner" width="220" height="74" rx="3"/>
+      <text class="chip" x="14" y="24">/PANTA/TRADE</text>
+      <text class="node-copy" x="14" y="44">Quote · build · submit</text>
+      <text class="node-copy" x="14" y="61">verify · attribution</text>
+    </g>
+    <g transform="translate(20 288)">
+      <rect class="inner" width="220" height="58" rx="3"/>
+      <text class="chip" x="14" y="24">/POSITIONS + /CLAIM</text>
+      <text class="node-copy" x="14" y="44">Portfolio settlement</text>
+    </g>
+    <g transform="translate(20 359)">
+      <rect width="220" height="64" rx="3" fill="#182016" stroke="#526341"/>
+      <text class="chip" x="14" y="25" style="fill:#b7f34a">PANTA_API_KEY</text>
+      <text class="node-copy" x="14" y="47">Server-only environment</text>
+    </g>
+  </g>
+
+  <g transform="translate(1300 190)">
+    <rect class="panel" width="228" height="128" rx="5" filter="url(#shadow)"/>
+    <circle cx="27" cy="31" r="6" fill="#b7f34a"/>
+    <text class="label" x="45" y="36">PANTA API</text>
+    <text class="node-title" x="22" y="76">Prediction rails</text>
+    <text class="node-copy" x="22" y="102">Markets · trades · claims</text>
+  </g>
+  <g transform="translate(1300 350)">
+    <rect class="panel" width="228" height="128" rx="5" filter="url(#shadow)"/>
+    <circle cx="27" cy="31" r="6" fill="#61b8ff"/>
+    <text class="label" x="45" y="36">DEX SCREENER</text>
+    <text class="node-title" x="22" y="76">Market telemetry</text>
+    <text class="node-copy" x="22" y="102">Price · volume · liquidity</text>
+  </g>
+  <g transform="translate(1300 510)">
+    <rect class="panel" width="228" height="128" rx="5" filter="url(#shadow)"/>
+    <circle cx="27" cy="31" r="6" fill="#f4b860"/>
+    <text class="label" x="45" y="36">SOLANA RPC</text>
+    <text class="node-title" x="22" y="76">Settlement layer</text>
+    <text class="node-copy" x="22" y="102">Broadcast · confirm · supply</text>
+  </g>
+  <!-- Data-flow connectors -->
+  <rect x="320" y="413" width="58" height="4" fill="#b7f34a"/><path d="M378 407l12 8-12 8z" fill="#b7f34a"/>
+  <text class="flow-label" x="351" y="399" text-anchor="middle">INTERACT</text>
+
+  <rect x="880" y="278" width="56" height="4" fill="#b7f34a"/><path d="M936 272l12 8-12 8z" fill="#b7f34a"/>
+  <text class="flow-label" x="910" y="264" text-anchor="middle">DATA</text>
+  <rect x="892" y="514" width="48" height="4" fill="#f4b860"/><path d="M892 508l-12 8 12 8z" fill="#f4b860"/>
+  <text class="flow-label" x="910" y="500" text-anchor="middle">UNSIGNED TX</text>
+
+  <rect x="1230" y="252" width="40" height="4" fill="#b7f34a"/><path d="M1230 246l-10 8 10 8zM1270 246l10 8-10 8z" fill="#b7f34a"/>
+  <text class="flow-label" x="1250" y="236" text-anchor="middle">PREDICTIONS</text>
+  <rect x="1230" y="412" width="40" height="4" fill="#61b8ff"/><path d="M1230 406l-10 8 10 8zM1270 406l10 8-10 8z" fill="#61b8ff"/>
+  <text class="flow-label" x="1250" y="396" text-anchor="middle">PRICES</text>
+
+  <rect x="878" y="638" width="4" height="34" fill="#f4b860"/><rect x="880" y="668" width="398" height="4" fill="#f4b860"/><rect x="1276" y="586" width="4" height="84" fill="#f4b860"/><path d="M1270 586l8-12 8 12z" fill="#f4b860"/>
+  <text class="flow-label" x="1080" y="694" text-anchor="middle">SIGNED TRANSACTION · BROADCAST</text>
+
+  <!-- Legend and security notes -->
+  <g transform="translate(72 734)">
+    <text class="label">FLOW KEY</text>
+    <rect x="0" y="38" width="44" height="4" fill="#b7f34a"/><path d="M44 32l12 8-12 8z" fill="#b7f34a"/>
+    <text class="node-copy" x="64" y="45">Prediction data</text>
+    <rect x="205" y="38" width="44" height="4" fill="#61b8ff"/><path d="M249 32l12 8-12 8z" fill="#61b8ff"/>
+    <text class="node-copy" x="269" y="45">Asset data</text>
+    <rect x="385" y="38" width="44" height="4" fill="#f4b860"/><path d="M429 32l12 8-12 8z" fill="#f4b860"/>
+    <text class="node-copy" x="449" y="45">Transaction path</text>
+  </g>
+  <g transform="translate(784 726)">
+    <rect width="744" height="102" rx="5" fill="#101511" stroke="#303a32"/>
+    <text class="label" x="22" y="30">SECURITY MODEL</text>
+    <text class="node-copy" x="22" y="58">API key remains server-side</text>
+    <text class="node-copy" x="265" y="58">•  Payloads validated and bounded</text>
+    <text class="node-copy" x="535" y="58">•  Upstream requests time out</text>
+    <text class="node-copy" x="22" y="82">Wallet signs locally</text>
+    <text class="node-copy" x="265" y="82">•  No custody of private keys</text>
+    <text class="node-copy" x="535" y="82">•  Live/demo sources labeled</text>
+  </g>
+</svg>
