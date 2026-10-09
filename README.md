@@ -35,7 +35,7 @@ workflow:
 - Wallet portfolio with live Panta positions and estimated claim value
 - Claim-eligibility display and non-custodial winnings claim flow
 - Persistent event watchlist with five-point probability-move alerts
-- Clear live/demo data-source indicator
+- Clear live/sandbox/demo data-source indicator
 - Accessible mobile navigation and reduced-motion support
 
 ## Panta integration

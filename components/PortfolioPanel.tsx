@@ -13,13 +13,13 @@ const demoPositions: Position[] = [
   { marketId: "FED5…P2A", category: "Macro", side: "no", shares: "41.66", phase: "active", claimable: false, claimed: false, estimatedValue: "24.58" },
 ];
 
-type PortfolioPanelProps = { live: boolean };
+type PortfolioPanelProps = { live: boolean; sandbox?: boolean };
 
-export function PortfolioPanel({ live }: PortfolioPanelProps) {
+export function PortfolioPanel({ live, sandbox = false }: PortfolioPanelProps) {
   const { publicKey, connected, signTransaction } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
-  const [positions, setPositions] = useState<Position[]>(demoPositions);
+  const [positions, setPositions] = useState<Position[]>(live ? [] : demoPositions);
   const [loading, setLoading] = useState(false);
   const [claiming, setClaiming] = useState<string>();
   const [error, setError] = useState<string>();
@@ -64,6 +64,10 @@ export function PortfolioPanel({ live }: PortfolioPanelProps) {
     }
     if (!live) {
       setError("Claiming is disabled while SolanaLens is using demo data.");
+      return;
+    }
+    if (sandbox) {
+      setError("Panta sandbox positions are fixtures and cannot be settled on-chain.");
       return;
     }
 
@@ -124,7 +128,7 @@ export function PortfolioPanel({ live }: PortfolioPanelProps) {
         <div><span>Estimated value</span><strong>{totalValue ? `$${totalValue.toFixed(2)}` : "—"}</strong><small>USDC mark-to-market</small></div>
         <div><span>Open positions</span><strong>{positions.filter((position) => position.phase === "active").length}</strong><small>Across Panta markets</small></div>
         <div className={claimableCount ? "claim-ready" : ""}><span>Ready to claim</span><strong>{claimableCount}</strong><small>{claimableCount ? "Action available" : "Nothing pending"}</small></div>
-        <div><span>Wallet status</span><strong className="wallet-status"><i className={connected ? "online" : ""} />{connected ? "Connected" : "Not connected"}</strong><small>{live ? "Live Panta data" : "Demo portfolio"}</small></div>
+        <div><span>Wallet status</span><strong className="wallet-status"><i className={connected ? "online" : ""} />{connected ? "Connected" : "Not connected"}</strong><small>{sandbox ? "Panta sandbox" : live ? "Live Panta data" : "Demo portfolio"}</small></div>
       </div>
 
       {(error || success) && (
@@ -137,7 +141,7 @@ export function PortfolioPanel({ live }: PortfolioPanelProps) {
       <div className="portfolio-table-wrap">
         <div className="portfolio-table-head">
           <div><WalletCards size={16} /><span>{live ? "Wallet positions" : "Illustrative positions"}</span></div>
-          <span className="source-badge"><i className={`live-dot ${live ? "panta" : "demo"}`} />{live ? "Panta live" : "Demo mode"}</span>
+          <span className="source-badge"><i className={`live-dot ${sandbox ? "panta-sandbox" : live ? "panta" : "demo"}`} />{sandbox ? "Panta sandbox" : live ? "Panta live" : "Demo mode"}</span>
         </div>
         <div className="portfolio-table-scroll">
           <table className="portfolio-table">

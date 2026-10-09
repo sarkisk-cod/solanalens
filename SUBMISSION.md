@@ -59,8 +59,9 @@ custody of user wallets or private keys.
 - **Market data:** DEX Screener public API
 - **SOL supply:** Solana RPC `getSupply`
 - **Secrets:** server-only environment variables and same-origin API routes
-- **Reliability:** explicit demo fallback, upstream timeouts, and a production
-  smoke suite backed by a local Panta mock; fixtures are never presented as live
+- **Reliability:** explicit demo fallback, sandbox detection, upstream timeouts,
+  and a production smoke suite backed by a local Panta mock; fixtures are never
+  presented as live or signable transactions
 - **Security:** input validation, payload limits, route allowlists,
   non-custodial signing, and dependency audit overrides
 

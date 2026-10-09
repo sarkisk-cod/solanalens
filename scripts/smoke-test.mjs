@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 
 const APP_PORT = 3218;
 const MOCK_PORT = 3219;
+const MOCK_PREFIX = `/run-${process.pid}`;
 const appUrl = `http://127.0.0.1:${APP_PORT}`;
 const upstreamRequests = [];
 
@@ -20,10 +21,10 @@ const mockServer = createServer(async (request, response) => {
   });
 
   response.setHeader("Content-Type", "application/json");
-  if (request.method === "GET" && request.url === "/markets/") {
+  if (request.method === "GET" && request.url === `${MOCK_PREFIX}/markets/`) {
     response.end(JSON.stringify({
       items: [{
-        marketId: "mock-sol-jup",
+        marketId: "TestMarket1111111111111111111111111111111",
         category: "Solana",
         title: "Will SOL outperform JUP this month?",
         yesPrice: 68,
@@ -34,7 +35,7 @@ const mockServer = createServer(async (request, response) => {
     }));
     return;
   }
-  if (request.method === "POST" && request.url === "/primaryorderquote/") {
+  if (request.method === "POST" && request.url === `${MOCK_PREFIX}/primaryorderquote/`) {
     response.end(JSON.stringify({
       quoteId: "quote-1",
       marketId: "mock-sol-jup",
@@ -47,7 +48,7 @@ const mockServer = createServer(async (request, response) => {
     }));
     return;
   }
-  if (request.method === "GET" && request.url?.startsWith("/positions/")) {
+  if (request.method === "GET" && request.url?.startsWith(`${MOCK_PREFIX}/positions/`)) {
     response.end(JSON.stringify({ wallet: TEST_WALLET, positions: [] }));
     return;
   }
@@ -72,7 +73,7 @@ const app = spawn(
     env: {
       ...process.env,
       PANTA_API_KEY: "pk_test_smoke_only",
-      PANTA_API_BASE_URL: `http://127.0.0.1:${MOCK_PORT}`,
+      PANTA_API_BASE_URL: `http://127.0.0.1:${MOCK_PORT}${MOCK_PREFIX}`,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -117,7 +118,7 @@ try {
 
   const markets = await requestJson("/api/panta/markets");
   assert.equal(markets.response.status, 200);
-  assert.equal(markets.payload.source, "panta");
+  assert.equal(markets.payload.source, "panta-sandbox");
   assert.equal(markets.payload.markets[0].yesPrice, 0.68);
   assert.deepEqual(markets.payload.markets[0].relatedAssets, ["SOL", "JUP"]);
 
@@ -181,7 +182,7 @@ try {
 
   assert.ok(upstreamRequests.length >= 3);
   assert.ok(upstreamRequests.every((request) => request.apiKey === "pk_test_smoke_only"));
-  console.log("Smoke tests passed: UI shell, Panta normalization, proxy auth, and request validation.");
+  console.log("Smoke tests passed: UI shell, sandbox detection, Panta normalization, proxy auth, and request validation.");
 } finally {
   await closeServers();
 }

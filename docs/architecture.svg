@@ -194,6 +194,6 @@
     <text class="node-copy" x="535" y="58">•  Upstream requests time out</text>
     <text class="node-copy" x="22" y="82">Wallet signs locally</text>
     <text class="node-copy" x="265" y="82">•  No custody of private keys</text>
-    <text class="node-copy" x="535" y="82">•  Live/demo sources labeled</text>
+    <text class="node-copy" x="535" y="82">•  Live/sandbox/demo labeled</text>
   </g>
 </svg>

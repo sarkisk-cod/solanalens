@@ -27,10 +27,12 @@ import { WalletControl } from "@/components/WalletControl";
 import { scoreTokenWithEvents } from "@/lib/asset-score";
 import { markets as fallbackMarkets, tokens as fallbackTokens, type Market, type Token } from "@/lib/market-data";
 
+type PantaSource = "demo" | "panta" | "panta-sandbox";
+
 export default function Dashboard() {
   const [marketList, setMarketList] = useState(fallbackMarkets);
   const [selectedMarket, setSelectedMarket] = useState<Market>(fallbackMarkets[0]);
-  const [source, setSource] = useState<"demo" | "panta">("demo");
+  const [source, setSource] = useState<PantaSource>("demo");
   const [assetTokens, setAssetTokens] = useState<Token[]>(fallbackTokens);
   const [assetSource, setAssetSource] = useState<"demo" | "dexscreener">("demo");
   const [query, setQuery] = useState("");
@@ -42,7 +44,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetch("/api/panta/markets")
       .then((response) => response.json())
-      .then((payload: { source?: "demo" | "panta"; markets?: Market[] }) => {
+      .then((payload: { source?: PantaSource; markets?: Market[] }) => {
         if (payload.markets?.length) {
           setMarketList(payload.markets);
           setSelectedMarket(payload.markets[0]);
@@ -159,12 +161,12 @@ export default function Dashboard() {
 
         <div className="sidebar-status">
           <div className="status-orbit"><span /><Radio size={17} /></div>
-          <div><strong>Panta feed</strong><span>{source === "panta" ? "Live connection" : "Demo mode"}</span></div>
+          <div><strong>Panta feed</strong><span>{source === "panta" ? "Live connection" : source === "panta-sandbox" ? "Sandbox connection" : "Demo mode"}</span></div>
           <span className={`live-dot ${source}`} />
         </div>
 
         <div className="sidebar-foot">
-          <span>Network</span><strong><span className="network-dot" />Solana Mainnet</strong>
+          <span>Network</span><strong><span className="network-dot" />{source === "panta-sandbox" ? "Solana Devnet" : "Solana Mainnet"}</strong>
         </div>
       </aside>
 
@@ -252,7 +254,7 @@ export default function Dashboard() {
           <section className="section-block" id="markets">
             <div className="section-heading">
               <div><span className="section-index">02</span><h2>Event radar</h2><p>What prediction markets are saying about Solana next.</p></div>
-              <div className="source-badge"><span className={`live-dot ${source}`} />{source === "panta" ? "Live Panta data" : "Panta demo data"}</div>
+              <div className="source-badge"><span className={`live-dot ${source}`} />{source === "panta" ? "Live Panta data" : source === "panta-sandbox" ? "Panta sandbox data" : "Panta demo data"}</div>
             </div>
 
             <div className="market-layout">
@@ -278,7 +280,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          <PortfolioPanel live={source === "panta"} />
+          <PortfolioPanel key={source} live={source !== "demo"} sandbox={source === "panta-sandbox"} />
 
           <footer className="footer">
             <div className="footer-brand"><span className="brand-mark mini"><span /></span><strong>SOLANALENS</strong></div>
@@ -288,7 +290,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {tradeOpen && <TradeModal market={selectedMarket} live={source === "panta"} onClose={() => setTradeOpen(false)} />}
+      {tradeOpen && <TradeModal market={selectedMarket} live={source !== "demo"} sandbox={source === "panta-sandbox"} onClose={() => setTradeOpen(false)} />}
       {alertsOpen && <AlertDrawer alerts={alerts} markets={marketList} onRemove={removeAlert} onClose={() => setAlertsOpen(false)} />}
     </main>
   );

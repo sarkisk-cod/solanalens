@@ -56,6 +56,7 @@ button { color: inherit; }
 .sidebar-status div > span { color: var(--muted); font-size: 9px; }
 .live-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; background: var(--acid); box-shadow: 0 0 9px rgba(183,243,74,.65); }
 .live-dot.demo { background: var(--amber); box-shadow: 0 0 9px rgba(244,184,74,.5); }
+.live-dot.panta-sandbox { background: var(--cyan); box-shadow: 0 0 9px rgba(102,229,216,.55); }
 .sidebar-foot { margin-top: 13px; padding: 13px 9px 0; border-top: 1px solid var(--line-soft); display: flex; justify-content: space-between; align-items: center; color: #555d57; font: 500 9px/1 "JetBrains Mono Variable", monospace; }
 .sidebar-foot strong { color: #929991; font-weight: 500; }
 .network-dot { width: 5px; height: 5px; display: inline-block; margin-right: 6px; border-radius: 50%; background: var(--cyan); }
@@ -194,6 +195,7 @@ button { color: inherit; }
 .trade-button:disabled { opacity: .68; cursor: wait; transform: none; }
 .quote-receipt { margin: 13px 0 20px; padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #0d100e; border: 1px solid var(--line); }.quote-receipt div { padding-right: 8px; border-right: 1px solid var(--line-soft); }.quote-receipt div:last-child { border-right: 0; }.quote-receipt span,.quote-receipt strong { display: block; }.quote-receipt span { color: #69726b; font-size: 7px; }.quote-receipt strong { margin-top: 6px; font: 550 9px/1.2 "JetBrains Mono Variable", monospace; overflow-wrap: anywhere; }
 .trade-error { margin: -7px 0 15px; padding: 10px 11px; color: #ff9688; background: rgba(255,114,94,.07); border-left: 2px solid var(--red); font-size: 9px; line-height: 1.45; }
+.trade-notice { margin: -7px 0 15px; padding: 10px 11px; display: flex; align-items: flex-start; gap: 8px; color: var(--cyan); background: rgba(102,229,216,.06); border-left: 2px solid var(--cyan); font-size: 9px; line-height: 1.45; }.trade-notice svg { flex: 0 0 auto; }
 .trade-success { margin-top: 22px; padding: 15px; display: grid; grid-template-columns: 34px 1fr; gap: 11px; align-items: center; color: var(--acid); background: rgba(183,243,74,.07); border: 1px solid rgba(183,243,74,.3); }.trade-success > span { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: rgba(183,243,74,.12); }.trade-success strong { font-size: 11px; }.trade-success p { margin: 4px 0 0; color: #899287; font-size: 8px; }.trade-success a { grid-column: 2; color: var(--acid); font: 600 8px/1 "JetBrains Mono Variable", monospace; text-decoration: underline; text-underline-offset: 3px; }
 .spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
 

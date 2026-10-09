@@ -11,16 +11,19 @@ import { instructionsToVersionedTransaction } from "@/lib/solana-transaction";
 type TradeModalProps = {
   market: Market;
   live: boolean;
+  sandbox?: boolean;
   onClose: () => void;
 };
 
-export function TradeModal({ market, live, onClose }: TradeModalProps) {
+export function TradeModal({ market, live, sandbox = false, onClose }: TradeModalProps) {
   const [side, setSide] = useState<"YES" | "NO">("YES");
   const [amount, setAmount] = useState("20.00");
   const [progress, setProgress] = useState<TradeProgress>("idle");
   const [quote, setQuote] = useState<PrimaryQuote>();
   const [signature, setSignature] = useState<string>();
   const [error, setError] = useState<string>();
+  const [notice, setNotice] = useState<string>();
+  const [sandboxVerified, setSandboxVerified] = useState(false);
   const { publicKey, connected, signTransaction } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
@@ -32,6 +35,8 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
     if (nextAmount !== undefined) setAmount(nextAmount);
     setQuote(undefined);
     setError(undefined);
+    setNotice(undefined);
+    setSandboxVerified(false);
     setProgress("idle");
   }
 
@@ -52,6 +57,8 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
 
     setProgress("quoting");
     setError(undefined);
+    setNotice(undefined);
+    setSandboxVerified(false);
     try {
       const data = await postPanta<PrimaryQuote>("quote", {
         wallet: publicKey.toBase58(),
@@ -60,6 +67,7 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
         amountUsdc: amountNumber.toFixed(2),
       });
       setQuote(data);
+      if (data.disclaimer) setNotice(data.disclaimer);
       setProgress("quoted");
     } catch (tradeError) {
       setError(describeError(tradeError));
@@ -77,6 +85,13 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
         wallet: publicKey.toBase58(),
         maxSlippageBps: 100,
       });
+
+      if (sandbox || build.disclaimer || !build.instructions?.length || !build.recentBlockhash || build.lastValidBlockHeight === 0) {
+        setSandboxVerified(true);
+        setNotice(`Sandbox build verified. ${build.disclaimer ?? "Panta did not return a signable on-chain transaction for this fixture."}`);
+        setProgress("quoted");
+        return;
+      }
 
       setProgress("signing");
       const transaction = instructionsToVersionedTransaction(
@@ -131,9 +146,9 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
         <div className="trade-steps" aria-label="Trade progress">
           <span className={progress !== "idle" ? "done" : "active"}>1 Quote</span>
           <i />
-          <span className={["signing", "submitting", "complete"].includes(progress) ? "done" : quote ? "active" : ""}>2 Sign</span>
+          <span className={sandboxVerified || ["signing", "submitting", "complete"].includes(progress) ? "done" : quote ? "active" : ""}>2 {sandbox ? "Build" : "Sign"}</span>
           <i />
-          <span className={progress === "complete" ? "done" : progress === "submitting" ? "active" : ""}>3 Verify</span>
+          <span className={sandboxVerified || progress === "complete" ? "done" : progress === "submitting" ? "active" : ""}>3 {sandbox ? "Inspect" : "Verify"}</span>
         </div>
 
         <div className="side-switch">
@@ -153,7 +168,7 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
         {quote ? (
           <div className="quote-receipt">
             <div><span>Estimated shares</span><strong>{quote.shares}</strong></div>
-            <div><span>Average price</span><strong>{quote.avgPrice}</strong></div>
+            <div><span>Average price</span><strong>{averagePrice(quote)}</strong></div>
             <div><span>Panta fee</span><strong>{quote.feeUsdc} USDC</strong></div>
           </div>
         ) : (
@@ -163,6 +178,7 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
           </div>
         )}
 
+        {notice && <div className="trade-notice" role="status"><ShieldCheck size={14} /><span>{notice}</span></div>}
         {error && <div className="trade-error" role="alert">{error}</div>}
 
         {progress === "complete" ? (
@@ -174,7 +190,7 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
         ) : (
           <button
             className="trade-button modal-trade"
-            disabled={busy}
+            disabled={busy || sandboxVerified}
             onClick={!connected ? () => setVisible(true) : quote ? executeTrade : requestQuote}
           >
             {busy && <LoaderCircle className="spin" size={16} />}
@@ -182,8 +198,8 @@ export function TradeModal({ market, live, onClose }: TradeModalProps) {
             {progress === "building" && "Building transaction…"}
             {progress === "signing" && "Confirm in wallet…"}
             {progress === "submitting" && "Verifying on-chain…"}
-            {!busy && (!connected ? "Connect wallet to continue" : quote ? `Review & buy ${side}` : live ? "Get live quote" : "Preview requires live Panta data")}
-            {!busy && <ArrowRight size={16} />}
+            {!busy && (!connected ? "Connect wallet to continue" : sandboxVerified ? "Sandbox build verified" : quote ? sandbox || quote.disclaimer ? "Verify sandbox build" : `Review & buy ${side}` : live ? "Get live quote" : "Preview requires live Panta data")}
+            {!busy && (sandboxVerified ? <Check size={16} /> : <ArrowRight size={16} />)}
           </button>
         )}
         <p className="custody-note"><ShieldCheck size={14} />You remain in control. Your wallet signs every transaction.</p>
@@ -203,9 +219,15 @@ async function postPanta<T = unknown>(action: string, body: unknown): Promise<T>
   return payload;
 }
 
+function averagePrice(quote: PrimaryQuote): string {
+  if (quote.avgPrice) return quote.avgPrice;
+  return quote.disclaimer ? "Sandbox fixture" : "—";
+}
+
 function describeError(error: unknown): string {
   if (error instanceof Error) {
     if (/reject|declin|cancel/i.test(error.message)) return "The wallet signature was cancelled.";
+    if (/base58|public key|blockhash/i.test(error.message)) return "Panta did not return a signable Solana transaction for this market.";
     return error.message;
   }
   return "The trade could not be completed.";

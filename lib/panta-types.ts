@@ -16,9 +16,10 @@ export type PrimaryQuote = {
   side: "yes" | "no";
   amountUsdc: string;
   shares: string;
-  avgPrice: string;
+  avgPrice?: string;
   feeUsdc: string;
   expiresAt: string;
+  disclaimer?: string;
 };
 
 export type PrimaryBuild = {
@@ -35,6 +36,7 @@ export type PrimaryBuild = {
   recentBlockhash: string;
   lastValidBlockHeight?: number;
   expiresAt?: string;
+  disclaimer?: string;
 };
 
 export type TradeProgress =

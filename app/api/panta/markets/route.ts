@@ -5,8 +5,13 @@ import { fetchPantaMarkets, normalizePantaMarket } from "@/lib/panta";
 export async function GET() {
   try {
     const rawMarkets = await fetchPantaMarkets();
+    const sandbox = rawMarkets.some((market) => {
+      const id = String(market.marketId ?? market.id ?? "");
+      const title = String(market.title ?? market.question ?? "");
+      return id.startsWith("TestMarket") || /\bsandbox\b|\btest market\b/i.test(title);
+    });
     return NextResponse.json({
-      source: "panta",
+      source: sandbox ? "panta-sandbox" : "panta",
       markets: rawMarkets.map(normalizePantaMarket),
     });
   } catch (error) {
