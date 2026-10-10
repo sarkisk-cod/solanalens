@@ -109,6 +109,9 @@ funds or contacting the live Panta API.
 See [`SUBMISSION.md`](./SUBMISSION.md) for the English pitch, Panta integration
 summary, demo flow, judging-criteria alignment, and final submission checklist.
 
+- **Live application:** [solanalens.vercel.app](https://solanalens.vercel.app/)
+- **Demo video:** [Watch SolanaLens on YouTube](https://www.youtube.com/watch?v=DWw7Ni9rBnU)
+
 ## Status
 
 The repository contains the working MVP interface, Solana wallet connection,

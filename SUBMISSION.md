@@ -70,6 +70,9 @@ custody of user wallets or private keys.
 The timed narration and shot list are available in
 [`docs/demo-script.md`](./docs/demo-script.md).
 
+- **Live application:** [solanalens.vercel.app](https://solanalens.vercel.app/)
+- **Demo video:** [YouTube](https://www.youtube.com/watch?v=DWw7Ni9rBnU)
+
 1. Open the overview and identify the live DEX-data badge.
 2. Explain the ecosystem score and expand its methodology.
 3. Search for SOL or JUP and review price, volume, liquidity, and event score.
@@ -140,8 +143,8 @@ claims, and attribution flows.
 - [ ] Complete a test quote/build/sign/submit/verify transaction
 - [ ] Test positions and a claimable market with a dedicated test wallet
 - [ ] Confirm mobile layout and wallet deep-link behavior
-- [ ] Add a public demo URL to README and both submissions
-- [ ] Record a demo using the flow in this document
+- [x] Add a public demo URL to README and both submissions
+- [x] Record and publish a demo video
 - [ ] Add final product screenshots
 - [x] Add architecture diagram
 - [ ] Collect and document genuine tester feedback
