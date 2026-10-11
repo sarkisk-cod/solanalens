@@ -71,6 +71,7 @@ The timed narration and shot list are available in
 [`docs/demo-script.md`](./docs/demo-script.md).
 
 - **Live application:** [solanalens.vercel.app](https://solanalens.vercel.app/)
+- **Pitch video:** [YouTube](https://youtu.be/SB03XrA0XO8?si=yKbvomZ8c694iuys)
 - **Demo video:** [YouTube](https://www.youtube.com/watch?v=DWw7Ni9rBnU)
 
 1. Open the overview and identify the live DEX-data badge.

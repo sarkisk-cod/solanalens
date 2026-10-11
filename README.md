@@ -110,6 +110,7 @@ See [`SUBMISSION.md`](./SUBMISSION.md) for the English pitch, Panta integration
 summary, demo flow, judging-criteria alignment, and final submission checklist.
 
 - **Live application:** [solanalens.vercel.app](https://solanalens.vercel.app/)
+- **Pitch video:** [Watch SolanaLens on YouTube](https://youtu.be/SB03XrA0XO8?si=yKbvomZ8c694iuys)
 - **Demo video:** [Watch SolanaLens on YouTube](https://www.youtube.com/watch?v=DWw7Ni9rBnU)
 
 ## Status
